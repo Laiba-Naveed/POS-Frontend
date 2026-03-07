@@ -1,15 +1,21 @@
 const API_BASE = "http://192.168.18.27:5000/api";
 
+const getToken = () => localStorage.getItem("pos_token");
+
 export const api = {
   getAllProducts: async () => {
-    const res = await fetch(`${API_BASE}/products`);
+    const res = await fetch(`${API_BASE}/products`, {
+      headers: { "Authorization": `Bearer ${getToken()}` },
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to fetch products");
     return data;
   },
 
   getProduct: async (barcode) => {
-    const res = await fetch(`${API_BASE}/products/${barcode}`);
+    const res = await fetch(`${API_BASE}/products/${barcode}`, {
+      headers: { "Authorization": `Bearer ${getToken()}` },
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Product not found");
     return data;
@@ -18,7 +24,10 @@ export const api = {
   addProduct: async (payload) => {
     const res = await fetch(`${API_BASE}/products`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken()}`,
+      },
       body: JSON.stringify(payload),
     });
     const data = await res.json();
@@ -27,24 +36,34 @@ export const api = {
   },
 
   createSale: async (items, paymentMethod) => {
-  const res = await fetch(`${API_BASE}/orders/checkout`, {  // Correct endpoint
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items, payMethod: paymentMethod }), // send expected fields
-  });
+    const cartItems = items.map((item) => ({
+      productId: item._id,
+      quantity: item.qty,
+    }));
 
-  // Check if response is OK before parsing JSON
-  if (!res.ok) {
-    const text = await res.text();  // read HTML or error message
-    throw new Error(text || "Sale failed");
-  }
+    const res = await fetch(`${API_BASE}/orders/checkout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ cartItems }),
+    });
 
-  const data = await res.json(); // safe to parse JSON now
-  return data;
-},
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Sale failed");
+    }
 
+    const data = await res.json();
+    return data;
+  },
+
+  // Returns: { date, totalOrders, totalRevenue, orders: [...] }
   getAllSales: async () => {
-    const res = await fetch(`${API_BASE}/sales`);
+    const res = await fetch(`${API_BASE}/orders/sales`, {
+      headers: { "Authorization": `Bearer ${getToken()}` },
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to fetch sales");
     return data;

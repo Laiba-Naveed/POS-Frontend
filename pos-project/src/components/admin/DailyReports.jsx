@@ -3,34 +3,37 @@ import { api } from "../../api";
 
 const fmt = (n) => "Rs " + Number(n).toLocaleString("en-PK");
 
-function getSaleDate(s) {
-  const r = s.createdAt || s.date || s.created_at || s.timestamp || s.saleDate || "";
-  return r ? new Date(r).toISOString().slice(0, 10) : "";
-}
-
-function getSaleTotal(s) {
-  return Number(s.totalAmount || s.total || s.amount || s.grandTotal || 0);
-}
-
 function getSaleTime(s) {
-  const r = s.createdAt || s.date || s.created_at || s.timestamp || s.saleDate || "";
+  const r = s.createdAt || "";
   return r
     ? new Date(r).toLocaleTimeString("en-PK", { hour: "2-digit", minute: "2-digit", hour12: true })
     : "—";
 }
 
 export function DailyReports({ showToast }) {
-  const [sales, setSales]       = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [expanded, setExpanded] = useState(null);
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const [sales, setSales]         = useState([]);
+  const [products, setProducts]   = useState([]);
+  const [totalRevenue, setRev]    = useState(0);
+  const [totalOrders, setOrders]  = useState(0);
+  const [loading, setLoading]     = useState(true);
+  const [expanded, setExpanded]   = useState(null);
 
   const load = async () => {
     setLoading(true);
     try {
-      const data = await api.getAllSales();
-      const list = Array.isArray(data) ? data : data.sales || data.data || [];
-      setSales(list.filter((s) => getSaleDate(s) === todayStr));
+      // Fetch both sales and products at the same time
+      const [salesData, productsData] = await Promise.all([
+        api.getAllSales(),
+        api.getAllProducts(),
+      ]);
+
+      // Store products list for name lookup
+      const productsList = Array.isArray(productsData) ? productsData : productsData.products || [];
+      setProducts(productsList);
+
+      setRev(salesData.totalRevenue || 0);
+      setOrders(salesData.totalOrders || 0);
+      setSales(salesData.orders || []);
     } catch (e) {
       showToast("Could not load sales: " + e.message, "error");
     } finally {
@@ -40,8 +43,16 @@ export function DailyReports({ showToast }) {
 
   useEffect(() => { load(); }, []);
 
-  const totalRevenue = sales.reduce((sum, s) => sum + getSaleTotal(s), 0);
-  const totalOrders  = sales.length;
+  // Look up product name by _id from products list
+  const getProductName = (productField) => {
+    if (!productField) return "—";
+    // If already populated (has name), return it directly
+    if (typeof productField === "object" && productField.name) return productField.name;
+    // Otherwise it's an ID — look it up in products list
+    const id = typeof productField === "object" ? productField._id : productField;
+    const found = products.find((p) => p._id === id || p._id?.toString() === id?.toString());
+    return found ? found.name : `ID: ${String(id).slice(-6)}`;
+  };
 
   return (
     <div className="dr-page">
@@ -103,7 +114,7 @@ export function DailyReports({ showToast }) {
       ) : (
         <div className="dr-orders">
           {sales.map((sale, i) => {
-            const items  = sale.items || sale.products || sale.orderItems || [];
+            const items  = sale.items || [];
             const isOpen = expanded === i;
             const isCard = (sale.paymentMethod || "").toLowerCase() === "card";
 
@@ -125,7 +136,7 @@ export function DailyReports({ showToast }) {
                   <div className={"dr-order-method " + (isCard ? "dr-method-card" : "dr-method-cash")}>
                     {isCard ? "💳 Card" : "💵 Cash"}
                   </div>
-                  <div className="dr-order-total">{fmt(getSaleTotal(sale))}</div>
+                  <div className="dr-order-total">{fmt(sale.totalAmount || 0)}</div>
                   <div className="dr-order-chevron">{isOpen ? "▲" : "▼"}</div>
                 </div>
 
@@ -142,13 +153,12 @@ export function DailyReports({ showToast }) {
                           <span>Subtotal</span>
                         </div>
                         {items.map((it, j) => {
-                          const qty   = it.quantity || it.qty || 1;
-                          const price = it.price || it.unitPrice || 0;
+                          const qty   = it.quantity || 1;
+                          const price = it.priceAtPurchase || 0;
+                          const name  = getProductName(it.product);
                           return (
                             <div key={j} className="dr-item-row">
-                              <span className="dr-item-name">
-                                {it.name || it.productName || it.barcode || "—"}
-                              </span>
+                              <span className="dr-item-name">{name}</span>
                               <span className="dr-item-qty">×{qty}</span>
                               <span className="dr-item-price">{fmt(price)}</span>
                               <span className="dr-item-sub">{fmt(price * qty)}</span>
@@ -157,7 +167,7 @@ export function DailyReports({ showToast }) {
                         })}
                         <div className="dr-order-footer">
                           <span>Order Total</span>
-                          <span className="dr-order-footer-total">{fmt(getSaleTotal(sale))}</span>
+                          <span className="dr-order-footer-total">{fmt(sale.totalAmount || 0)}</span>
                         </div>
                       </>
                     )}

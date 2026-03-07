@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../api";
-import { getTodayStats } from "../utils/helpers";
 import { useToast } from "../hooks/useToast";
 import { useCart } from "../hooks/useCart";
 import { Toast, SuccessModal } from "../components/shared";
@@ -25,9 +24,9 @@ export function POSPage({ onGoAdmin }) {
     handleRemoveAll, clearCart,
   } = useCart(products, showToast);
 
-  // Fetch ALL products once on mount
   useEffect(() => {
     (async () => {
+      // 1. Products
       try {
         const prodData = await api.getAllProducts();
         const list = Array.isArray(prodData) ? prodData : prodData.products || [];
@@ -38,16 +37,16 @@ export function POSPage({ onGoAdmin }) {
         setFetching(false);
       }
 
+      // 2. Today's sales stats
+      // Backend returns: { date, totalOrders, totalRevenue, orders }
       try {
-        const salesData = await api.getAllSales();
-        const { revenue, orders } = getTodayStats(salesData);
-        setDailyRevenue(revenue);
-        setDailyOrders(orders);
+        const data = await api.getAllSales();
+        setDailyRevenue(data.totalRevenue || 0);
+        setDailyOrders(data.totalOrders || 0);
       } catch (_) {}
     })();
   }, []);
 
-  // No API call needed — just filter from already-loaded products
   const handleCategorySelect = (cat) => {
     setActive((prev) => (prev === cat ? null : cat));
   };
@@ -60,13 +59,7 @@ export function POSPage({ onGoAdmin }) {
     if (!cartItems.length) return;
     setLoading(true);
     try {
-      const orderItems = cartItems.map((i) => ({
-        barcode: i.barcode,
-        name: i.name,
-        price: i.price,
-        quantity: i.qty,
-      }));
-      const response = await api.createSale(orderItems, payMethod);
+      const response = await api.createSale(cartItems, payMethod);
       const paid = response.totalAmount || total;
 
       setProducts((prev) =>
