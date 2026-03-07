@@ -21,16 +21,12 @@ export function DailyReports({ showToast }) {
   const load = async () => {
     setLoading(true);
     try {
-      // Fetch both sales and products at the same time
       const [salesData, productsData] = await Promise.all([
         api.getAllSales(),
         api.getAllProducts(),
       ]);
-
-      // Store products list for name lookup
       const productsList = Array.isArray(productsData) ? productsData : productsData.products || [];
       setProducts(productsList);
-
       setRev(salesData.totalRevenue || 0);
       setOrders(salesData.totalOrders || 0);
       setSales(salesData.orders || []);
@@ -43,12 +39,9 @@ export function DailyReports({ showToast }) {
 
   useEffect(() => { load(); }, []);
 
-  // Look up product name by _id from products list
   const getProductName = (productField) => {
     if (!productField) return "—";
-    // If already populated (has name), return it directly
     if (typeof productField === "object" && productField.name) return productField.name;
-    // Otherwise it's an ID — look it up in products list
     const id = typeof productField === "object" ? productField._id : productField;
     const found = products.find((p) => p._id === id || p._id?.toString() === id?.toString());
     return found ? found.name : `ID: ${String(id).slice(-6)}`;
@@ -67,9 +60,7 @@ export function DailyReports({ showToast }) {
           </div>
         </div>
         <button className="dr-refresh" onClick={load} disabled={loading}>
-          <span style={{ display: "inline-block", animation: loading ? "spin 1s linear infinite" : "none" }}>
-            ↻
-          </span>
+          <span style={{ display: "inline-block", animation: loading ? "spin 1s linear infinite" : "none" }}>↻</span>
           {loading ? " Loading…" : " Refresh"}
         </button>
       </div>
@@ -85,7 +76,9 @@ export function DailyReports({ showToast }) {
         <div className="dr-card dr-card-revenue">
           <div className="dr-card-bg-num">₨</div>
           <div className="dr-card-label">Total Revenue</div>
-          <div className="dr-card-value">{fmt(totalRevenue)}</div>
+          <div className="dr-card-value" style={{ fontSize: "clamp(18px, 5vw, 34px)", wordBreak: "break-word" }}>
+            {fmt(totalRevenue)}
+          </div>
           <div className="dr-card-sub">earned today</div>
         </div>
       </div>
@@ -93,9 +86,7 @@ export function DailyReports({ showToast }) {
       {/* Orders list header */}
       <div className="dr-list-header">
         <span className="dr-list-title">Order Details</span>
-        <span className="dr-list-count">
-          {totalOrders} order{totalOrders !== 1 ? "s" : ""}
-        </span>
+        <span className="dr-list-count">{totalOrders} order{totalOrders !== 1 ? "s" : ""}</span>
       </div>
 
       {loading ? (
@@ -107,9 +98,7 @@ export function DailyReports({ showToast }) {
         <div className="dr-empty-box">
           <div className="dr-empty-icon">🧾</div>
           <div className="dr-empty-msg">No orders recorded today</div>
-          <div className="dr-empty-sub">
-            Orders will appear here once the first sale is completed
-          </div>
+          <div className="dr-empty-sub">Orders will appear here once the first sale is completed</div>
         </div>
       ) : (
         <div className="dr-orders">
@@ -120,22 +109,22 @@ export function DailyReports({ showToast }) {
 
             return (
               <div key={i} className={"dr-order" + (isOpen ? " dr-order-open" : "")}>
-                <div
-                  className="dr-order-row"
-                  onClick={() => setExpanded(isOpen ? null : i)}
-                >
+                <div className="dr-order-row" onClick={() => setExpanded(isOpen ? null : i)}>
                   <div className="dr-order-index">#{String(i + 1).padStart(2, "0")}</div>
+
+                  {/* Info + method badge together */}
                   <div className="dr-order-info">
                     <div className="dr-order-time">{getSaleTime(sale)}</div>
-                    <div className="dr-order-items">
-                      {items.length > 0
-                        ? items.length + " item" + (items.length !== 1 ? "s" : "")
-                        : "Order"}
+                    <div style={{ display:"flex", alignItems:"center", gap:"6px", marginTop:"3px", flexWrap:"wrap" }}>
+                      <span className={"dr-order-method " + (isCard ? "dr-method-card" : "dr-method-cash")}>
+                        {isCard ? "💳 Card" : "💵 Cash"}
+                      </span>
+                      <span className="dr-order-items">
+                        {items.length > 0 ? items.length + " item" + (items.length !== 1 ? "s" : "") : "Order"}
+                      </span>
                     </div>
                   </div>
-                  <div className={"dr-order-method " + (isCard ? "dr-method-card" : "dr-method-cash")}>
-                    {isCard ? "💳 Card" : "💵 Cash"}
-                  </div>
+
                   <div className="dr-order-total">{fmt(sale.totalAmount || 0)}</div>
                   <div className="dr-order-chevron">{isOpen ? "▲" : "▼"}</div>
                 </div>
