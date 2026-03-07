@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const API_BASE = "http://192.168.18.27:5000/api";
+const API_BASE = "https://fortunate-robby-lalallalalaalaallaalla-cfde15bf.koyeb.app/api";
 
 export function AdminLoginPage({ onLoginSuccess, onBack }) {
   const [form, setForm]         = useState({ email: "", password: "" });

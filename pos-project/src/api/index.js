@@ -1,4 +1,4 @@
-const API_BASE = "http://192.168.18.27:5000/api";
+const API_BASE = "https://fortunate-robby-lalallalalaalaallaalla-cfde15bf.koyeb.app/api";
 
 const getToken = () => localStorage.getItem("pos_token");
 
