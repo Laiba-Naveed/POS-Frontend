@@ -26,7 +26,6 @@ export function POSPage({ onGoAdmin }) {
 
   useEffect(() => {
     (async () => {
-      // 1. Products
       try {
         const prodData = await api.getAllProducts();
         const list = Array.isArray(prodData) ? prodData : prodData.products || [];
@@ -36,9 +35,6 @@ export function POSPage({ onGoAdmin }) {
       } finally {
         setFetching(false);
       }
-
-      // 2. Today's sales stats
-      // Backend returns: { date, totalOrders, totalRevenue, orders }
       try {
         const data = await api.getAllSales();
         setDailyRevenue(data.totalRevenue || 0);
@@ -69,7 +65,13 @@ export function POSPage({ onGoAdmin }) {
         })
       );
 
-      setSuccess({ total: paid, method: payMethod, items: itemCount });
+      // ✅ Pass full cartItems snapshot into success
+      setSuccess({
+        total: paid,
+        method: payMethod,
+        items: itemCount,
+        cartItems: [...cartItems],
+      });
       setOrderNote("");
       setDailyRevenue((r) => r + paid);
       setDailyOrders((o) => o + 1);
