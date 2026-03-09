@@ -133,13 +133,15 @@ body { font-family:'Nunito',sans-serif; background:#FFF8F0; color:#2C1810; heigh
 
 .cp-pay-label { font-size:10px; font-weight:800; color:#c8a98a; text-transform:uppercase; letter-spacing:1px; margin-bottom:7px; }
 .cp-methods   { display:flex; gap:7px; margin-bottom:10px; }
-.cp-method    { flex:1; padding:9px; border:2px solid #F4A300; border-radius:9px; background:#FFF3E0; font-size:12px; font-weight:800; cursor:pointer; transition:all .15s; color:#2C1810; font-family:'Nunito',sans-serif; }
-.cp-method:hover { border-color:#B71C1C; }
-.cp-method-active { border-color:#B71C1C; background:#FFF0F0; box-shadow:0 0 0 2px rgba(183,28,28,0.1); }
+.cp-method    { flex:1; display:flex; align-items:center; gap:7px; padding:10px 12px; border:2px solid #e8d5b0; border-radius:9px; background:#FFF8F0; font-size:13px; font-weight:800; cursor:pointer; transition:all .15s; color:#2C1810; font-family:'Nunito',sans-serif; user-select:none; }
+.cp-method:hover { border-color:#F4A300; background:#FFF3E0; }
+.cp-method-active { border-color:#16a34a; background:#f0fdf4; box-shadow:0 0 0 2px rgba(22,163,74,0.12); }
+.cp-method-radio { width:15px; height:15px; accent-color:#16a34a; cursor:pointer; flex-shrink:0; }
 
-.cp-pay-btn { width:100%; padding:13px; background:linear-gradient(135deg,#F4A300,#E8931F); color:#fff; border:none; border-radius:11px; font-size:14px; font-weight:900; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:7px; font-family:'Nunito',sans-serif; box-shadow:0 3px 12px rgba(244,163,0,0.3); }
-.cp-pay-btn:hover:not(:disabled) { background:linear-gradient(135deg,#B71C1C,#D32F2F); transform:translateY(-1px); box-shadow:0 5px 16px rgba(183,28,28,0.3); }
+.cp-pay-btn { width:100%; padding:14px; background:#16a34a; color:#fff; border:none; border-radius:11px; font-size:15px; font-weight:900; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; font-family:'Nunito',sans-serif; box-shadow:0 3px 12px rgba(22,163,74,0.25); }
+.cp-pay-btn:hover:not(:disabled) { background:#15803d; transform:translateY(-1px); box-shadow:0 5px 16px rgba(22,163,74,0.3); }
 .cp-pay-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.cp-pay-check { width:22px; height:22px; background:rgba(255,255,255,0.25); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; flex-shrink:0; }
 
 /* ── ADMIN ── */
 .adm-root   { display:flex; flex-direction:column; min-height:100vh; background:#FFF3E0; font-family:'Nunito',sans-serif; }
