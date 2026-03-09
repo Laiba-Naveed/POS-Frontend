@@ -1,17 +1,35 @@
 import React, { useState } from "react";
 import { fmt } from "../../utils/helpers";
 
+// "Kulcha Naan" -> "kulchaNaan"
+function toCamel(str) {
+  return str.trim().split(/\s+/).map((w, i) =>
+    i === 0
+      ? w.charAt(0).toLowerCase() + w.slice(1)
+      : w.charAt(0).toUpperCase() + w.slice(1)
+  ).join("");
+}
+
 export function ProductCard({ product, qty, meta, index, onAdd, onDec }) {
   const out = product.stock === 0;
   const low = product.stock > 0 && product.stock <= 5;
-  const [imgError, setImgError] = useState(false);
 
-  // Try /products/{barcode}.jpg — fallback to emoji if missing
-  const toCamel = (s) => s.trim().split(/s+/).map((w,i) => i===0 ? w.charAt(0).toLowerCase()+w.slice(1) : w.charAt(0).toUpperCase()+w.slice(1)).join("");
-  const imgBase = toCamel(product.name);
-  // Try jpg first, webp as fallback handled via onError chain
-  const imgSrc = `/products/${imgBase}.jpg`;
-  const imgSrcWebp = `/products/${imgBase}.webp`;
+  const base = toCamel(product.name);
+  // Try jpg first, then webp
+  const extensions = ["jpg", "webp", "jpeg", "png"];
+  const [extIndex, setExtIndex] = useState(0);
+  const [imgFailed, setImgFailed] = useState(false);
+
+  const imgSrc = !imgFailed ? `/products/${base}.${extensions[extIndex]}` : null;
+
+  const handleImgError = () => {
+    const next = extIndex + 1;
+    if (next < extensions.length) {
+      setExtIndex(next); // try next extension
+    } else {
+      setImgFailed(true); // all failed, show emoji
+    }
+  };
 
   return (
     <div
@@ -25,25 +43,28 @@ export function ProductCard({ product, qty, meta, index, onAdd, onDec }) {
       {qty > 0 && <div className="prod-ring" style={{ borderColor: meta.color }} />}
 
       {/* Product image or emoji fallback */}
-      <div className="prod-icon-wrap" style={{ background: meta.light, width:"100%", height:"100px", borderRadius:"10px", overflow:"hidden", position:"relative" }}>
-        {!imgError ? (
+      <div style={{
+        width: "100%",
+        height: "100px",
+        borderRadius: "10px",
+        overflow: "hidden",
+        position: "relative",
+        background: meta.light,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}>
+        {!imgFailed && imgSrc ? (
           <img
+            key={imgSrc}
             src={imgSrc}
             alt={product.name}
-            onError={(e) => {
-              // Try webp before giving up
-              if (e.target.src !== window.location.origin + imgSrcWebp) {
-                e.target.src = imgSrcWebp;
-              } else {
-                setImgError(true);
-              }
-            }}
+            onError={handleImgError}
             style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }}
           />
         ) : (
-          <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <span className="prod-icon">{meta.emoji}</span>
-          </div>
+          <span style={{ fontSize:"32px" }}>{meta.emoji}</span>
         )}
         {low && <span className="badge badge-low" style={{ position:"absolute", top:"6px", right:"6px" }}>Low</span>}
         {out && <span className="badge badge-out" style={{ position:"absolute", top:"6px", right:"6px" }}>Out</span>}
