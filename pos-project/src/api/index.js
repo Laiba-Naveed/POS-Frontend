@@ -68,6 +68,7 @@ export const api = {
     if (!res.ok) throw new Error(data.message || "Failed to fetch sales");
     return data;
   },
+
   getEmployees: async () => {
     const res = await fetch(`${API_BASE}/auth/users`, {
       headers: { "Authorization": `Bearer ${getToken()}` },
@@ -78,16 +79,23 @@ export const api = {
   },
 
   createUser: async (payload) => {
-    const res = await fetch(`${API_BASE}/auth/register`, {
+    const res = await fetch(`${API_BASE}/auth/add-user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        name: payload.name,
+        email: payload.email,
+        password: payload.password,
+        role: payload.role || "employee",
+        branchId: JSON.parse(localStorage.getItem("pos_user"))?.branchId || null,
+        isActive: true,
+      }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to create employee");
     return data;
-  }
+  },
 };
