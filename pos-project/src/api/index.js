@@ -70,7 +70,7 @@ export const api = {
   },
 
   getEmployees: async () => {
-    const res = await fetch(`${API_BASE}/auth/users`, {
+    const res = await fetch(`${API_BASE}/users/staff`, {
       headers: { "Authorization": `Bearer ${getToken()}` },
     });
     const data = await res.json();
