@@ -469,3 +469,41 @@ body { font-family:'Nunito',sans-serif; background:#FFF8F0; color:#2C1810; heigh
   .pos-header { padding:7px 12px; flex-wrap:nowrap; }
   .admin-btn  { padding:7px 12px; font-size:12px; }
 }
+/* ── MANAGE EMPLOYEES ── */
+.emp-toggle { display:flex; gap:10px; margin-bottom:4px; }
+.emp-toggle-btn { flex:1; padding:13px; background:#fff; border:2px solid #F4A300; border-radius:12px; font-size:13px; font-weight:800; color:#c8a98a; cursor:pointer; font-family:'Nunito',sans-serif; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.emp-toggle-btn:hover { border-color:#B71C1C; color:#B71C1C; background:#FFF0F0; }
+.emp-toggle-active { background:#F4A300; border-color:#F4A300; color:#fff; box-shadow:0 4px 14px rgba(244,163,0,0.3); }
+.emp-toggle-active:hover { background:#F4A300; border-color:#F4A300; color:#fff; }
+.emp-count-badge { background:rgba(255,255,255,0.35); color:#fff; font-size:11px; font-weight:900; border-radius:10px; padding:1px 7px; }
+.emp-toggle-btn:not(.emp-toggle-active) .emp-count-badge { background:#B71C1C; color:#fff; }
+
+.emp-green { color:#16a34a !important; }
+
+.emp-stats-row { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding:14px 16px; background:#FFF3E0; border:1.5px solid #F4A300; border-radius:12px; }
+.emp-stat-chip { display:flex; flex-direction:column; align-items:center; flex:1; }
+.emp-stat-val { font-size:22px; font-weight:900; color:#B71C1C; font-family:'Playfair Display',serif; line-height:1.1; }
+.emp-stat-label { font-size:10px; font-weight:700; color:#c8a98a; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }
+.emp-refresh-btn { padding:8px 16px; background:#2C1810; color:#F4A300; border:none; border-radius:9px; font-size:12px; font-weight:800; cursor:pointer; font-family:'Nunito',sans-serif; transition:all .2s; display:flex; align-items:center; gap:5px; }
+.emp-refresh-btn:hover:not(:disabled) { background:#B71C1C; color:#fff; }
+.emp-refresh-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+.emp-loading { display:flex; align-items:center; gap:12px; padding:40px 20px; justify-content:center; color:#c8a98a; font-size:14px; font-weight:600; }
+
+.emp-empty { text-align:center; padding:50px 20px; }
+.emp-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.4; }
+.emp-empty-msg { font-size:16px; font-weight:900; color:#2C1810; margin-bottom:6px; }
+.emp-empty-sub { font-size:13px; color:#c8a98a; font-weight:600; }
+
+.emp-list { display:flex; flex-direction:column; gap:10px; }
+.emp-row { display:flex; align-items:center; gap:14px; padding:14px 16px; background:#FFF8F0; border:1.5px solid #FFF3E0; border-radius:12px; transition:all .2s; }
+.emp-row:hover { border-color:#F4A300; box-shadow:0 2px 10px rgba(244,163,0,0.12); }
+.emp-avatar { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#F4A300,#B71C1C); color:#fff; font-size:17px; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Playfair Display',serif; }
+.emp-info { flex:1; min-width:0; }
+.emp-name { font-size:14px; font-weight:800; color:#2C1810; }
+.emp-email { font-size:11px; color:#c8a98a; font-weight:600; margin-top:2px; }
+.emp-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.emp-status { font-size:11px; font-weight:800; padding:4px 10px; border-radius:20px; }
+.emp-status-on  { background:#F0FDF4; color:#16a34a; border:1.5px solid #bbf7d0; }
+.emp-status-off { background:#FFF0F0; color:#B71C1C; border:1.5px solid #fca5a5; }
+.emp-role-badge { font-size:10px; font-weight:800; padding:4px 10px; border-radius:20px; background:#FFF3E0; color:#F4A300; border:1.5px solid #F4A300; }

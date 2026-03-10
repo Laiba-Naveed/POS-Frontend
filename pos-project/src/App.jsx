@@ -6,17 +6,24 @@ import { AdminLoginPage } from "./pages/AdminLogin";
 
 export default function App() {
   const [page, setPage] = useState(() => {
-    // On reload, check if POS token exists
     return localStorage.getItem("pos_token") ? "pos" : "login";
   });
 
   const [posToken, setPosToken]     = useState(() => localStorage.getItem("pos_token") || null);
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem("pos_admin_token") || null);
 
-  // General login → go to POS
+  // General login → check role, go to POS
   const handlePosLogin = (token, user) => {
-    setPosToken(token);
-    setPage("pos");
+    // If admin logs in from the main login page, send them to admin portal directly
+    if (user?.role === "admin") {
+      localStorage.setItem("pos_admin_token", token);
+      localStorage.setItem("pos_admin_user", JSON.stringify(user));
+      setAdminToken(token);
+      setPage("admin");
+    } else {
+      setPosToken(token);
+      setPage("pos");
+    }
   };
 
   // Admin login → go to Admin
@@ -25,7 +32,7 @@ export default function App() {
     setPage("admin");
   };
 
-  // Logout from POS → back to general login
+  // Logout from POS → back to login
   const handlePosLogout = () => {
     localStorage.removeItem("pos_token");
     localStorage.removeItem("pos_user");
@@ -33,20 +40,20 @@ export default function App() {
     setPage("login");
   };
 
-  // Logout from Admin → back to POS
+  // Logout from Admin → back to POS (if POS token exists) or login
   const handleAdminLogout = () => {
     localStorage.removeItem("pos_admin_token");
     localStorage.removeItem("pos_admin_user");
     setAdminToken(null);
-    setPage("pos");
+    setPage(posToken ? "pos" : "login");
   };
 
   // Clicking Admin button in POS → show admin login
   const handleGoAdmin = () => {
     if (adminToken) {
-      setPage("admin"); // already logged in as admin
+      setPage("admin");
     } else {
-      setPage("admin-login"); // need to login first
+      setPage("admin-login");
     }
   };
 
@@ -73,7 +80,6 @@ export default function App() {
     );
   }
 
-  // Default: POS page
   return (
     <POSPage
       token={posToken}

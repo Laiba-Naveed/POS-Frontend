@@ -6,12 +6,14 @@ import {
   AddProductForm,
   LookupProduct,
   DailyReports,
+  ManageEmployees,
 } from "../components/admin";
 
 const TABS = [
-  ["add",     "＋",  "Add Product"],
-  ["lookup",  "⌕",  "Lookup Product"],
-  ["reports", "📊", "Daily Reports"],
+  ["add",       "＋",  "Add Product"],
+  ["lookup",    "⌕",  "Lookup Product"],
+  ["reports",   "📊", "Daily Reports"],
+  ["employees", "👥", "Employees"],
 ];
 
 export function AdminPage({ onGoBack }) {
@@ -37,9 +39,10 @@ export function AdminPage({ onGoBack }) {
 
       <main className="adm-main">
         <div className="adm-container">
-          {tab === "add"    && <AddProductForm showToast={showToast} />}
-          {tab === "lookup" && <LookupProduct  showToast={showToast} />}
-          {tab === "reports"&& <DailyReports   showToast={showToast} />}
+          {tab === "add"       && <AddProductForm  showToast={showToast} />}
+          {tab === "lookup"    && <LookupProduct   showToast={showToast} />}
+          {tab === "reports"   && <DailyReports    showToast={showToast} />}
+          {tab === "employees" && <ManageEmployees showToast={showToast} />}
         </div>
       </main>
 
