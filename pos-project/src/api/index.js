@@ -1,6 +1,7 @@
 const API_BASE = "https://fortunate-robby-lalallalalaalaallaalla-cfde15bf.koyeb.app/api";
 
-const getToken = () => localStorage.getItem("pos_token");
+const getToken = () =>
+  localStorage.getItem("pos_admin_token") || localStorage.getItem("pos_token");
 
 export const api = {
   getAllProducts: async () => {
@@ -59,7 +60,6 @@ export const api = {
     return data;
   },
 
-  // Returns: { date, totalOrders, totalRevenue, orders: [...] }
   getAllSales: async () => {
     const res = await fetch(`${API_BASE}/orders/sales`, {
       headers: { "Authorization": `Bearer ${getToken()}` },
@@ -90,7 +90,7 @@ export const api = {
         email: payload.email,
         password: payload.password,
         role: payload.role || "employee",
-        branchId: JSON.parse(localStorage.getItem("pos_user"))?.branchId || null,
+        branchId: JSON.parse(localStorage.getItem("pos_admin_user"))?.branchId || null,
         isActive: true,
       }),
     });
