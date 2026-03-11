@@ -12,31 +12,26 @@ export default function App() {
   const [posToken, setPosToken]     = useState(() => localStorage.getItem("pos_token") || null);
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem("pos_admin_token") || null);
 
-  // General login → check role, go to POS
+  // All logins → go to POS
   const handlePosLogin = (token, user) => {
-    // If admin logs in from the main login page, send them to admin portal directly
-    if (user?.role === "admin") {
-      localStorage.setItem("pos_admin_token", token);
-      localStorage.setItem("pos_admin_user", JSON.stringify(user));
-      setAdminToken(token);
-      setPage("admin");
-    } else {
-      setPosToken(token);
-      setPage("pos");
-    }
+    setPosToken(token);
+    setPage("pos");
   };
 
-  // Admin login → go to Admin
+  // Admin login from admin-login page → go to Admin
   const handleAdminLogin = (token, user) => {
     setAdminToken(token);
     setPage("admin");
   };
 
-  // Logout from POS → back to login
+  // Logout from POS → clear everything → back to login
   const handlePosLogout = () => {
     localStorage.removeItem("pos_token");
     localStorage.removeItem("pos_user");
+    localStorage.removeItem("pos_admin_token");
+    localStorage.removeItem("pos_admin_user");
     setPosToken(null);
+    setAdminToken(null);
     setPage("login");
   };
 

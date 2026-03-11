@@ -5,7 +5,7 @@ import { useCart } from "../hooks/useCart";
 import { Toast, SuccessModal } from "../components/shared";
 import { POSHeader, CategoryBar, ProductGrid, CartPanel } from "../components/pos";
 
-export function POSPage({ onGoAdmin }) {
+export function POSPage({ onGoAdmin, onLogout }) {
   const [products, setProducts]         = useState([]);
   const [activeCategory, setActive]     = useState(null);
   const [loading, setLoading]           = useState(false);
@@ -96,6 +96,7 @@ export function POSPage({ onGoAdmin }) {
         dailyRevenue={dailyRevenue}
         dailyOrders={dailyOrders}
         onGoAdmin={onGoAdmin}
+        onLogout={onLogout}
         isAdmin={isAdmin}
       />
 

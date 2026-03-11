@@ -1,7 +1,7 @@
 import React from "react";
 import { fmt } from "../../utils/helpers";
 
-export function POSHeader({ dailyRevenue, dailyOrders, onGoAdmin, isAdmin }) {
+export function POSHeader({ dailyRevenue, dailyOrders, onGoAdmin, onLogout, isAdmin }) {
   return (
     <header className="pos-header">
       <div className="pos-header-left">
@@ -33,6 +33,13 @@ export function POSHeader({ dailyRevenue, dailyOrders, onGoAdmin, isAdmin }) {
             </button>
           </>
         )}
+        <button
+          className="admin-btn"
+          onClick={onLogout}
+          style={{ background: "#FFF0F0", color: "#B71C1C", borderColor: "#B71C1C" }}
+        >
+          ⏻ Logout
+        </button>
       </div>
     </header>
   );
