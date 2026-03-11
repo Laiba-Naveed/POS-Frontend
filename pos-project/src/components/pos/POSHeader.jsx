@@ -1,7 +1,7 @@
 import React from "react";
 import { fmt } from "../../utils/helpers";
 
-export function POSHeader({ dailyRevenue, dailyOrders, onGoAdmin }) {
+export function POSHeader({ dailyRevenue, dailyOrders, onGoAdmin, isAdmin }) {
   return (
     <header className="pos-header">
       <div className="pos-header-left">
@@ -18,17 +18,21 @@ export function POSHeader({ dailyRevenue, dailyOrders, onGoAdmin }) {
         </div>
       </div>
       <div className="pos-header-right">
-        <div className="stat-chip">
-          <span className="sc-label">Revenue</span>
-          <span className="sc-val">{fmt(dailyRevenue)}</span>
-        </div>
-        <div className="stat-chip">
-          <span className="sc-label">Orders</span>
-          <span className="sc-val">{dailyOrders}</span>
-        </div>
-        <button className="admin-btn" onClick={onGoAdmin}>
-          ⚙ Admin
-        </button>
+        {isAdmin && (
+          <>
+            <div className="stat-chip">
+              <span className="sc-label">Revenue</span>
+              <span className="sc-val">{fmt(dailyRevenue)}</span>
+            </div>
+            <div className="stat-chip">
+              <span className="sc-label">Orders</span>
+              <span className="sc-val">{dailyOrders}</span>
+            </div>
+            <button className="admin-btn" onClick={onGoAdmin}>
+              ⚙ Admin
+            </button>
+          </>
+        )}
       </div>
     </header>
   );

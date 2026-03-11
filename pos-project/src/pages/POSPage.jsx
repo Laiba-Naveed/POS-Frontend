@@ -16,6 +16,9 @@ export function POSPage({ onGoAdmin }) {
   const [dailyRevenue, setDailyRevenue] = useState(0);
   const [dailyOrders, setDailyOrders]   = useState(0);
 
+  const currentUser = JSON.parse(localStorage.getItem("pos_user") || "{}");
+  const isAdmin = currentUser?.role === "admin";
+
   const { toast, showToast } = useToast();
   const {
     cart, setCart,
@@ -35,11 +38,14 @@ export function POSPage({ onGoAdmin }) {
       } finally {
         setFetching(false);
       }
-      try {
-        const data = await api.getAllSales();
-        setDailyRevenue(data.totalRevenue || 0);
-        setDailyOrders(data.totalOrders || 0);
-      } catch (_) {}
+
+      if (isAdmin) {
+        try {
+          const data = await api.getAllSales();
+          setDailyRevenue(data.totalRevenue || 0);
+          setDailyOrders(data.totalOrders || 0);
+        } catch (_) {}
+      }
     })();
   }, []);
 
@@ -65,7 +71,6 @@ export function POSPage({ onGoAdmin }) {
         })
       );
 
-      // ✅ Pass full cartItems snapshot into success
       setSuccess({
         total: paid,
         method: payMethod,
@@ -73,8 +78,10 @@ export function POSPage({ onGoAdmin }) {
         cartItems: [...cartItems],
       });
       setOrderNote("");
-      setDailyRevenue((r) => r + paid);
-      setDailyOrders((o) => o + 1);
+      if (isAdmin) {
+        setDailyRevenue((r) => r + paid);
+        setDailyOrders((o) => o + 1);
+      }
       setCart({});
     } catch (e) {
       showToast(e.message || "Payment failed", "error");
@@ -89,6 +96,7 @@ export function POSPage({ onGoAdmin }) {
         dailyRevenue={dailyRevenue}
         dailyOrders={dailyOrders}
         onGoAdmin={onGoAdmin}
+        isAdmin={isAdmin}
       />
 
       <div className="pos-body">
